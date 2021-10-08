@@ -58,6 +58,8 @@ public class RandomUtil {
 
     /**
      * 功能：获取UUID并去除“-”
+     *
+     * @return 字符串
      */
     public static String getUUID() {
         String uuid = UUID.randomUUID().toString();

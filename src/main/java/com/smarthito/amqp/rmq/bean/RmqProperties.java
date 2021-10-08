@@ -1,4 +1,4 @@
-package com.smarthito.amqp.rmq;
+package com.smarthito.amqp.rmq.bean;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

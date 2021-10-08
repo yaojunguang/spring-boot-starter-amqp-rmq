@@ -4,7 +4,6 @@ package com.smarthito.amqp.rmq.stream;
 import com.smarthito.amqp.rmq.config.RedisAutoConfig;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +32,6 @@ import java.util.function.BiFunction;
 /**
  * Simple {@link Executor} based {@link StreamMessageListenerContainer} implementation for running {@link Task tasks} to
  * poll on Redis Streams.
- * <p/>
  * This message container creates long-running tasks that are executed on {@link Executor}.
  *
  * @author Mark Paluch
@@ -52,10 +50,13 @@ public class DefaultStreamMessageListenerContainer<K, V extends Record<K, ?>> im
     private final StreamMessageListenerContainerOptions<K, V> containerOptions;
 
     /**
-     * 每次拉取后的
+     * 每次拉取后休眠时间
      */
-    @Setter
     private long sleepPerFetch;
+
+    public void setSleepPerFetch(long sleepPerFetch) {
+        this.sleepPerFetch = sleepPerFetch;
+    }
 
     /**
      * 延迟消息处理脚本，统一的，仅需要一次处理
@@ -71,9 +72,11 @@ public class DefaultStreamMessageListenerContainer<K, V extends Record<K, ?>> im
      *
      * @param connectionFactory must not be {@literal null}.
      * @param containerOptions  must not be {@literal null}.
+     * @param sleepPerFetch     执行后空消息后休眠.
      */
     public DefaultStreamMessageListenerContainer(RedisConnectionFactory connectionFactory,
-                                                 StreamMessageListenerContainerOptions<K, V> containerOptions, long sleepPerFetch) {
+                                                 StreamMessageListenerContainerOptions<K, V> containerOptions,
+                                                 long sleepPerFetch) {
 
         Assert.isTrue(sleepPerFetch > 0, "sleepPerFetch must be greater zero!");
         Assert.notNull(connectionFactory, "RedisConnectionFactory must not be null!");

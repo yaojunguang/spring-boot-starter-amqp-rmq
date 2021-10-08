@@ -28,7 +28,8 @@ public class RetryUtil {
      * @param executorInterface 执行函数
      * @param tryNum            重试次数默认3次
      * @param delayMillis       每次重试延迟，默认为0,小于5的不考虑
-     * @param <T>               结果
+     * @param logEnable         是否记录日志
+     * @param <T>               返回的对象，null来判定结果是否正确
      * @return 返回
      */
     public static <T> T retryAction(RetryUtilInterface<T> executorInterface, int tryNum, long delayMillis, boolean logEnable) {
@@ -70,8 +71,9 @@ public class RetryUtil {
      * @param executorInterface 执行函数
      * @param tryNum            重试次数默认3次
      * @param delayMillis       每次重试延迟，默认为0,小于5的不考虑
-     * @param <T>               结果
+     * @param <T>               返回的对象，null来判定结果是否正确
      * @return 返回
+     * @throws Exception 异常
      */
     public static <T> T retry(RetryUtilInterface<T> executorInterface, int tryNum, long delayMillis) throws Exception {
         int count = 1;

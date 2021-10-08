@@ -2,6 +2,7 @@ package com.smarthito.amqp.rmq;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.smarthito.amqp.rmq.annotation.RmqHandler;
+import com.smarthito.amqp.rmq.bean.RmqProperties;
 import com.smarthito.amqp.rmq.config.RedisAutoConfig;
 import com.smarthito.amqp.rmq.stream.DefaultStreamMessageListenerContainer;
 import com.smarthito.amqp.rmq.util.JsonUtil;
@@ -176,6 +177,9 @@ public class RmqAnnotationConfiguration implements BeanPostProcessor {
 
     /**
      * 添加消费组
+     *
+     * @param topic         消息主题
+     * @param consumerGroup 消费组名称
      */
     public void addConsumerGroup(String topic, String consumerGroup) {
         //创建消费的group
@@ -194,6 +198,8 @@ public class RmqAnnotationConfiguration implements BeanPostProcessor {
 
     /**
      * 初始化消息主题
+     *
+     * @param topic 消息主题
      */
     private void initTopic(String topic) {
         //检查是否有该stream 存在

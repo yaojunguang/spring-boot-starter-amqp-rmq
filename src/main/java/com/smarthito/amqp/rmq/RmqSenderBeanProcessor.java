@@ -1,6 +1,7 @@
 package com.smarthito.amqp.rmq;
 
 import com.smarthito.amqp.rmq.annotation.RmqTopic;
+import com.smarthito.amqp.rmq.bean.RmqProperties;
 import com.smarthito.amqp.rmq.config.AnnotationInstantConfigBeanPostProcessor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
