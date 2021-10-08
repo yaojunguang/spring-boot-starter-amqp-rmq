@@ -29,9 +29,9 @@ spring:
     rmq:
       enable: true #默认需开启
       pending: 300 #超时未ack 消息重试时间延迟
-      pendingHandleLock: 20 #超时未ack消息处理时间锁
+      pending-handle-lock: 20 #超时未ack消息处理时间锁
       consumer-lock-time: 20 # 消息消费时间锁，0为不开启
-      
+
 ```
 
 ### 使用
