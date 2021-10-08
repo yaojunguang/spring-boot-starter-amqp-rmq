@@ -1,0 +1,7 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.smarthito.amqp.rmq.RedisAutoConfig,\
+com.smarthito.amqp.rmq.RmqProperties
+org.springframework.context.ApplicationContextInitializer=\
+com.smarthito.amqp.rmq.RmqSenderBeanProcessor,\
+com.smarthito.amqp.rmq.RmqAnnotationConfiguration
+org.springframework.boot.env.EnvironmentPostProcessor=
