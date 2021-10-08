@@ -11,8 +11,8 @@
 ```
     <dependency>
         <groupId>com.smarthito</groupId>
-        <artifactId>spring-cache-redis-plus</artifactId>
-        <version>1.5.3</version>
+        <artifactId>spring-boot-starter-amqp-rmq</artifactId>
+        <version>1.0.0</version>
     </dependency>
 ```
 
