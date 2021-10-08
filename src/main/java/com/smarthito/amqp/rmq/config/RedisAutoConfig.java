@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -25,7 +24,6 @@ import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration
  * @author yaojunguang at 2021/1/12 7:58 下午
  */
 @Import({BeanValidatorPluginsConfiguration.class})
-@ConditionalOnProperty(name = "spring.redis.enable", havingValue = "true")
 public class RedisAutoConfig {
 
     public static final String REDIS_LOCK_PREFIX = "lock:";

@@ -38,7 +38,7 @@ public class RmqProperties {
     /**
      * 最大重试次数
      */
-    private Integer retry = 3;
+    private Integer pendingRetry = 3;
 
     /**
      * 每次拉取的间隔

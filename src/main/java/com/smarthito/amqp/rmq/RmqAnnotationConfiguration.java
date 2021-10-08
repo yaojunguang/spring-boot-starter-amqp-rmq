@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -54,6 +55,7 @@ import java.util.concurrent.TimeUnit;
 public class RmqAnnotationConfiguration implements BeanPostProcessor {
 
     @Bean
+    @ConditionalOnMissingBean
     public ThreadPoolTaskScheduler threadPoolTaskExecutor() {
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
                 .setNameFormat("stream-container-pool-%d").build();
@@ -254,9 +256,9 @@ public class RmqAnnotationConfiguration implements BeanPostProcessor {
                 PendingMessage message = stringRedisTemplate.opsForStream()
                         .pending(topic, consumerGroup, Range.closed("0", "+"), 5L)
                         .stream().filter(msg -> {
-                            if (msg.getTotalDeliveryCount() > rmqProperties.getRetry()) {
+                            if (msg.getTotalDeliveryCount() > rmqProperties.getPendingRetry()) {
                                 //重试超过3次，抛弃
-                                log.error("rmq 重试超{}次，强制ack topic={},msg={},ack={}", rmqProperties.getRetry(), topic, msg,
+                                log.error("rmq 重试超{}次，强制ack topic={},msg={},ack={}", rmqProperties.getPendingRetry(), topic, msg,
                                         stringRedisTemplate.opsForStream().acknowledge(topic, msg.getGroupName(), msg.getId()));
                                 return false;
                             }

@@ -15,7 +15,7 @@
     <description>基于redis stream 的消息队列优化</description>
     <properties>
         <java.version>1.8</java.version>
-        <guava.version>28.2-jre</guava.version>
+        <guava.version>31.0.1-jre</guava.version>
     </properties>
     <dependencies>
         <dependency>
@@ -32,6 +32,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
@@ -62,7 +67,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>13.0</version>
+            <version>22.0.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
