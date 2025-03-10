@@ -98,6 +98,7 @@ public class RmqAnnotationConfiguration implements BeanPostProcessor {
             this.taskScheduler.setPoolSize(20);
             this.taskScheduler.setThreadFactory(new ThreadFactoryBuilder()
                     .setNameFormat("stream-container-pool-%d").build());
+            this.taskScheduler.initialize();
         }
         return this.taskScheduler;
     }
@@ -310,6 +311,9 @@ public class RmqAnnotationConfiguration implements BeanPostProcessor {
     public void destroy() {
         if (container.isRunning()) {
             container.stop();
+        }
+        if (this.taskScheduler != null) {
+            this.taskScheduler.destroy();
         }
     }
 
