@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "spring.redis.rmq", ignoreInvalidFields = true)
+@ConfigurationProperties(prefix = "spring.data.redis.rmq", ignoreInvalidFields = true)
 public class RmqProperties {
 
     /**
@@ -53,7 +53,7 @@ public class RmqProperties {
     /**
      * 工作流前缀
      */
-    private String streamPrefix = "pano:stream:";
+    private String streamPrefix = "jo:stream:";
 
     /**
      * 消费锁的默认时长，min

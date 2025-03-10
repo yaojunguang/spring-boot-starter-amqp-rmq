@@ -6,10 +6,11 @@ import com.smarthito.amqp.rmq.bean.RmqProperties;
 import com.smarthito.amqp.rmq.config.RedisAutoConfig;
 import com.smarthito.amqp.rmq.stream.DefaultStreamMessageListenerContainer;
 import com.smarthito.amqp.rmq.util.JsonUtil;
-import com.smarthito.amqp.rmq.util.LogUtil;
 import com.smarthito.amqp.rmq.util.NetUtil;
 import com.smarthito.amqp.rmq.util.RandomUtil;
 import io.lettuce.core.RedisBusyException;
+import jakarta.annotation.PreDestroy;
+import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -34,8 +35,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.util.ReflectionUtils;
 
-import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.time.Duration;
@@ -51,7 +50,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 @Slf4j
-@ConditionalOnProperty(name = "spring.redis.rmq.enable", havingValue = "true")
+@ConditionalOnProperty(name = "spring.data.redis.rmq.enable", havingValue = "true")
 public class RmqAnnotationConfiguration implements BeanPostProcessor {
 
     @Bean
@@ -133,7 +132,7 @@ public class RmqAnnotationConfiguration implements BeanPostProcessor {
                         ReflectionUtils.invokeMethod(method, bean, parameters);
                         stringRedisTemplate.opsForStream().acknowledge(topic, handler.consumerGroup(), id);
                     } catch (Exception e) {
-                        log.error("rmq consume fail id={},msg={},ex={}", id, messageValue, LogUtil.stackError(e));
+                        log.error("rmq consume fail id={},msg={}", id, messageValue, e);
                     } finally {
                         if (key != null && rmqProperties.getConsumerLockTime() > 0) {
                             stringRedisTemplate.delete(key);

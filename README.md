@@ -12,7 +12,7 @@
     <dependency>
         <groupId>com.smarthito</groupId>
         <artifactId>spring-boot-starter-amqp-rmq</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </dependency>
 ```
 
@@ -25,12 +25,13 @@
 ```yaml
 
 spring:
-  redis:
-    rmq:
-      enable: true #默认需开启
-      pending: 300 #超时未ack 消息重试时间延迟
-      pending-handle-lock: 20 #超时未ack消息处理时间锁
-      consumer-lock-time: 20 # 消息消费时间锁，0为不开启
+  data:
+      redis:
+        rmq:
+          enable: true #默认需开启
+          pending: 300 #超时未ack 消息重试时间延迟
+          pending-handle-lock: 20 #超时未ack消息处理时间锁
+          consumer-lock-time: 20 # 消息消费时间锁，0为不开启
 
 ```
 

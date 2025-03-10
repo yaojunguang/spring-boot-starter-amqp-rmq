@@ -1,0 +1,4 @@
+com.smarthito.amqp.rmq.config.RedisAutoConfig
+com.smarthito.amqp.rmq.bean.RmqProperties
+com.smarthito.amqp.rmq.RmqSenderBeanProcessor
+com.smarthito.amqp.rmq.RmqAnnotationConfiguration
