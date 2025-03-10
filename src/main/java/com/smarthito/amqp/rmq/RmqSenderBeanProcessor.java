@@ -2,7 +2,6 @@ package com.smarthito.amqp.rmq;
 
 import com.smarthito.amqp.rmq.annotation.RmqTopic;
 import com.smarthito.amqp.rmq.bean.RmqProperties;
-import jakarta.annotation.Resource;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValues;
@@ -22,11 +21,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @ConditionalOnProperty(name = "spring.data.redis.rmq.enable", havingValue = "true")
 public class RmqSenderBeanProcessor implements SmartInstantiationAwareBeanPostProcessor {
 
-    @Resource
-    private StringRedisTemplate stringRedisTemplate;
+    private final StringRedisTemplate stringRedisTemplate;
 
-    @Resource
-    private RmqProperties rmqProperties;
+    private final RmqProperties rmqProperties;
+
+    public RmqSenderBeanProcessor(RmqProperties rmqProperties, StringRedisTemplate stringRedisTemplate) {
+        this.stringRedisTemplate = stringRedisTemplate;
+        this.rmqProperties = rmqProperties;
+    }
 
     /**
      * 发送端集合

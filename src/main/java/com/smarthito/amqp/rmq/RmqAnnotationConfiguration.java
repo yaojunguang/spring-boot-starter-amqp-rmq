@@ -9,9 +9,7 @@ import com.smarthito.amqp.rmq.util.JsonUtil;
 import com.smarthito.amqp.rmq.util.NetUtil;
 import com.smarthito.amqp.rmq.util.RandomUtil;
 import io.lettuce.core.RedisBusyException;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.domain.Range;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -51,38 +50,45 @@ import java.util.concurrent.TimeUnit;
 @ConditionalOnProperty(name = "spring.data.redis.rmq.enable", havingValue = "true")
 public class RmqAnnotationConfiguration implements BeanPostProcessor {
 
-    @Resource
-    private RmqProperties rmqProperties;
+    private final RmqProperties rmqProperties;
 
     /**
      * 连接池
      */
-    @Resource
-    private RedisConnectionFactory redisConnectionFactory;
+    private final RedisConnectionFactory redisConnectionFactory;
 
     /**
      * redis template
      */
-    @Resource
-    private StringRedisTemplate stringRedisTemplate;
+    private final StringRedisTemplate stringRedisTemplate;
 
     /**
      * 拉取线程池
      */
-    private ThreadPoolTaskScheduler taskScheduler;
+    private final ThreadPoolTaskScheduler taskScheduler;
 
     /**
-     * 处理容器，通用
+     * 构造函数
+     *
+     * @param rmqProperties          属性
+     * @param redisConnectionFactory redis链接
+     * @param stringRedisTemplate    处理的template
      */
-    private static DefaultStreamMessageListenerContainer<String, MapRecord<String, String, String>> container;
-
-    @PostConstruct
-    public void init() {
+    @Lazy
+    public RmqAnnotationConfiguration(RmqProperties rmqProperties, RedisConnectionFactory redisConnectionFactory, StringRedisTemplate stringRedisTemplate) {
+        this.rmqProperties = rmqProperties;
+        this.redisConnectionFactory = redisConnectionFactory;
+        this.stringRedisTemplate = stringRedisTemplate;
         taskScheduler = new ThreadPoolTaskScheduler();
         taskScheduler.setPoolSize(20);
         taskScheduler.setThreadFactory(new ThreadFactoryBuilder()
                 .setNameFormat("stream-container-pool-%d").build());
     }
+
+    /**
+     * 处理容器，通用
+     */
+    private static DefaultStreamMessageListenerContainer<String, MapRecord<String, String, String>> container;
 
     @Override
     public Object postProcessBeforeInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
