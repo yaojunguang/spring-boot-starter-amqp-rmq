@@ -9,7 +9,6 @@ import com.smarthito.amqp.rmq.util.JsonUtil;
 import com.smarthito.amqp.rmq.util.NetUtil;
 import com.smarthito.amqp.rmq.util.RandomUtil;
 import io.lettuce.core.RedisBusyException;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -66,15 +65,7 @@ public class RmqAnnotationConfiguration implements BeanPostProcessor {
     /**
      * 拉取线程池
      */
-    private ThreadPoolTaskScheduler taskScheduler;
-
-    @PostConstruct
-    public void init() {
-        this.taskScheduler = new ThreadPoolTaskScheduler();
-        this.taskScheduler.setPoolSize(20);
-        this.taskScheduler.setThreadFactory(new ThreadFactoryBuilder()
-                .setNameFormat("stream-container-pool-%d").build());
-    }
+    private ThreadPoolTaskScheduler taskScheduler = null;
 
     /**
      * 构造函数
@@ -97,7 +88,18 @@ public class RmqAnnotationConfiguration implements BeanPostProcessor {
 
     @Override
     public Object postProcessBeforeInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
+        getScheduler();
         return bean;
+    }
+
+    private ThreadPoolTaskScheduler getScheduler() {
+        if (this.taskScheduler == null) {
+            this.taskScheduler = new ThreadPoolTaskScheduler();
+            this.taskScheduler.setPoolSize(20);
+            this.taskScheduler.setThreadFactory(new ThreadFactoryBuilder()
+                    .setNameFormat("stream-container-pool-%d").build());
+        }
+        return this.taskScheduler;
     }
 
     @SneakyThrows
@@ -169,7 +171,7 @@ public class RmqAnnotationConfiguration implements BeanPostProcessor {
             StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options =
                     StreamMessageListenerContainer.StreamMessageListenerContainerOptions
                             .builder()
-                            .executor(taskScheduler)
+                            .executor(getScheduler())
                             // 消息消费异常的handler
                             .errorHandler(t -> log.error("rmq error={}", t.getMessage()))
                             .batchSize(batchSize)
@@ -254,7 +256,7 @@ public class RmqAnnotationConfiguration implements BeanPostProcessor {
     private void initPendingHandle(String topic, String consumerGroup, String consumerName, StreamListener<String, MapRecord<String, String, String>> streamListener) {
         String pendingKey = RedisAutoConfig.REDIS_LOCK_PREFIX + topic + ":" + consumerGroup + ":pending";
         //处理pending
-        taskScheduler.schedule(() -> {
+        getScheduler().schedule(() -> {
             //加一个处理锁,锁定XX秒
             if (Boolean.TRUE.equals(stringRedisTemplate.opsForValue().setIfAbsent(pendingKey, "", rmqProperties.getPendingHandleLock(), TimeUnit.SECONDS))) {
                 PendingMessage message = stringRedisTemplate.opsForStream()
