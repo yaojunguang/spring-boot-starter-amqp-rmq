@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.smarthito</groupId>
     <artifactId>spring-boot-starter-amqp-rmq</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <name>spring-boot-starter-amqp-rmq</name>
     <description>基于redis stream 的消息队列优化</description>
     <properties>

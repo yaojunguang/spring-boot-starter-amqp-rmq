@@ -9,6 +9,7 @@ import com.smarthito.amqp.rmq.util.JsonUtil;
 import com.smarthito.amqp.rmq.util.NetUtil;
 import com.smarthito.amqp.rmq.util.RandomUtil;
 import io.lettuce.core.RedisBusyException;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
@@ -17,9 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.domain.Range;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -40,7 +39,6 @@ import java.net.InetAddress;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -52,17 +50,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @ConditionalOnProperty(name = "spring.data.redis.rmq.enable", havingValue = "true")
 public class RmqAnnotationConfiguration implements BeanPostProcessor {
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ThreadPoolTaskScheduler threadPoolTaskExecutor() {
-        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
-                .setNameFormat("stream-container-pool-%d").build();
-        ThreadPoolTaskScheduler executor = new ThreadPoolTaskScheduler();
-        executor.setPoolSize(20);
-        executor.setThreadFactory(namedThreadFactory);
-        return executor;
-    }
 
     @Resource
     private RmqProperties rmqProperties;
@@ -89,6 +76,14 @@ public class RmqAnnotationConfiguration implements BeanPostProcessor {
      * 处理容器，通用
      */
     private static DefaultStreamMessageListenerContainer<String, MapRecord<String, String, String>> container;
+
+    @PostConstruct
+    public void init() {
+        taskScheduler = new ThreadPoolTaskScheduler();
+        taskScheduler.setPoolSize(20);
+        taskScheduler.setThreadFactory(new ThreadFactoryBuilder()
+                .setNameFormat("stream-container-pool-%d").build());
+    }
 
     @Override
     public Object postProcessBeforeInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
@@ -223,7 +218,7 @@ public class RmqAnnotationConfiguration implements BeanPostProcessor {
         try {
             uuid = InetAddress.getLocalHost().getHostAddress();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            log.warn("rmq 获取本地ip失败", ex);
         }
         if (StringUtils.isEmpty(uuid)) {
             uuid = RandomUtil.getSystemUuid();
@@ -279,7 +274,7 @@ public class RmqAnnotationConfiguration implements BeanPostProcessor {
                             }
                         }
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        log.warn("rmq消息处理失败", ex);
                     }
                     StreamOperations<String, String, String> streamOperations = this.stringRedisTemplate.opsForStream();
                     List<MapRecord<String, String, String>> result = streamOperations.range(topic, Range.rightOpen(message.getId().getValue(), message.getId().getValue()));
