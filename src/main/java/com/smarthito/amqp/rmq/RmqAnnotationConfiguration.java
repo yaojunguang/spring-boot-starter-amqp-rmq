@@ -9,6 +9,7 @@ import com.smarthito.amqp.rmq.util.JsonUtil;
 import com.smarthito.amqp.rmq.util.NetUtil;
 import com.smarthito.amqp.rmq.util.RandomUtil;
 import io.lettuce.core.RedisBusyException;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +66,15 @@ public class RmqAnnotationConfiguration implements BeanPostProcessor {
     /**
      * 拉取线程池
      */
-    private final ThreadPoolTaskScheduler taskScheduler;
+    private ThreadPoolTaskScheduler taskScheduler;
+
+    @PostConstruct
+    public void init() {
+        this.taskScheduler = new ThreadPoolTaskScheduler();
+        this.taskScheduler.setPoolSize(20);
+        this.taskScheduler.setThreadFactory(new ThreadFactoryBuilder()
+                .setNameFormat("stream-container-pool-%d").build());
+    }
 
     /**
      * 构造函数
@@ -79,10 +88,6 @@ public class RmqAnnotationConfiguration implements BeanPostProcessor {
         this.rmqProperties = rmqProperties;
         this.redisConnectionFactory = redisConnectionFactory;
         this.stringRedisTemplate = stringRedisTemplate;
-        taskScheduler = new ThreadPoolTaskScheduler();
-        taskScheduler.setPoolSize(20);
-        taskScheduler.setThreadFactory(new ThreadFactoryBuilder()
-                .setNameFormat("stream-container-pool-%d").build());
     }
 
     /**
