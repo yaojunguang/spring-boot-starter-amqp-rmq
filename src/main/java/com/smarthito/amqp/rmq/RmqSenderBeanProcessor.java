@@ -7,6 +7,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.ReflectionUtils;
 
@@ -25,6 +26,7 @@ public class RmqSenderBeanProcessor implements SmartInstantiationAwareBeanPostPr
 
     private final RmqProperties rmqProperties;
 
+    @Lazy
     public RmqSenderBeanProcessor(RmqProperties rmqProperties, StringRedisTemplate stringRedisTemplate) {
         this.stringRedisTemplate = stringRedisTemplate;
         this.rmqProperties = rmqProperties;
