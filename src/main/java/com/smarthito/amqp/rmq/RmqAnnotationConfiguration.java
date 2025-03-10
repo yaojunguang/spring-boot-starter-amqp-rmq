@@ -69,7 +69,6 @@ public class RmqAnnotationConfiguration implements BeanPostProcessor {
     /**
      * 拉取线程池
      */
-    @Resource
     private ThreadPoolTaskScheduler taskScheduler;
 
     /**
